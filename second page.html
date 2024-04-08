@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1vsd5d511v5sd51f5svg5s51s</title>
+    <style>
+        body {
+            background-color: #000000; /* Black background */
+            color: #39ff14; /* Radium green text color */
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            padding: 50px;
+            position: relative;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2em;
+        }
+        a {
+            color: #ff0000; /* Red link color */
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .floating-button {
+            position: absolute;
+            background-color: #ff0000; /* Red button color */
+            color: #ffffff; /* White text color */
+            padding: 10px 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.5s ease-in-out;
+        }
+        .box {
+            position: absolute;
+            top: 180px; /* Adjust this to position the box vertically */
+            left: 50%; /* Center the box horizontally */
+            transform: translateX(-50%);
+            width: 300px;
+            height: 300px;
+            border: 1px solid transparent; /* Invisible border */
+        }
+        .scary-text {
+            font-family: 'Creepster', cursive;
+            font-size: 2em;
+            color: #ff0000; /* Red color for the scary text */
+        }
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Creepster&display=swap">
+</head>
+<body>
+    <h1>Transferring Data to Domain Server</h1>
+    <p>Your data is being securely transferred to our domain server.</p>
+    <p>Please wait patiently while the process completes.</p>
+    <p>Thank you for your patience.</p>
+    <p><span class="scary-text">Play with me!</span></p> <!-- Scary monster writing -->
+    <!-- Invisible Box -->
+    <div class="box"></div>
+    <!-- Floating Button -->
+    <div class="floating-button" onclick="redirectToGame()">Click Me!</div>
+
+    <script>
+        // Function to redirect to Tic Tac Toe game page
+        function redirectToGame() {
+            window.location.href = "game.html";
+        }
+
+        // Function to randomly change button position within the box
+        function changePosition() {
+            var button = document.querySelector('.floating-button');
+            var box = document.querySelector('.box');
+            var boxRect = box.getBoundingClientRect();
+            var randomX = Math.floor(Math.random() * (boxRect.width - button.offsetWidth));
+            var randomY = Math.floor(Math.random() * (boxRect.height - button.offsetHeight));
+            button.style.transform = `translate(${boxRect.left + randomX}px, ${boxRect.top + randomY}px)`;
+        }
+
+        // Change position every half second
+        setInterval(changePosition, 500);
+    </script>
+</body>
+</html>

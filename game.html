@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>jhcvbkhjadckasgfkchakcbgkasbkfhghakjh87f a87fegga8fea8</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: black; /* Pitch black background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        position: relative; /* Added position relative to body */
+    }
+    .container {
+        text-align: center;
+        color: white; /* White text color */
+    }
+    .board {
+        display: grid;
+        grid-template-columns: repeat(3, 80px);
+        grid-template-rows: repeat(3, 80px);
+        gap: 4px;
+        margin-top: 20px;
+    }
+    .cell {
+        background-color: black; /* Black cell background */
+        border: 2px solid red; /* Red lines */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2em;
+        color: white; /* White font color */
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .cell:hover {
+        background-color: #222; /* Darker background color on hover */
+    }
+    .message {
+        margin-top: 20px;
+        font-size: 1.5em;
+        font-family: "Trebuchet MS", sans-serif; /* Trebuchet MS font */
+        color: red; /* Red font color */
+    }
+    .judgement {
+        font-family: "Trebuchet MS", sans-serif; /* Trebuchet MS font */
+        font-size: 2em;
+        color: white; /* White font color */
+    }
+    .scary {
+        font-family: "Trebuchet MS", sans-serif; /* Trebuchet MS font */
+        font-size: 2em;
+        color: red; /* Red font color */
+    }
+    .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        color: green;
+        font-family: monospace;
+        font-size: 14px;
+        overflow-y: hidden;
+        white-space: nowrap;
+        padding: 20px;
+    }
+    .loading-text {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: "Trebuchet MS", sans-serif; /* Trebuchet MS font */
+        font-size: 36px;
+        color: white;
+        animation: blink 1s infinite; /* Blinking animation */
+    }
+    @keyframes blink {
+        0%, 49% {
+            opacity: 1;
+        }
+        50%, 100% {
+            opacity: 0;
+        }
+    }
+    .loading-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 10px;
+        background-color: #0f0; /* Green color for loading bar */
+        border-radius: 5px; /* Soft corners */
+    }
+</style>
+</head>
+<body>
+<div class="container" id="gameContainer">
+    <h1 class="judgement">Judgement</h1>
+    <div class="board" id="board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+    </div>
+    <div class="message" id="message"></div>
+</div>
+<div class="loading-screen" id="loadingScreen" style="display: none;"></div>
+<script>
+    const board = document.getElementById('board');
+    const cells = board.querySelectorAll('.cell');
+    const message = document.getElementById('message');
+    const loadingScreen = document.getElementById('loadingScreen');
+    const gameContainer = document.getElementById('gameContainer');
+
+    cells.forEach(cell => {
+        cell.addEventListener('click', handleCellClick);
+    });
+
+    function handleCellClick(event) {
+        const cell = event.target;
+        if (cell.textContent !== '' || checkWinner()) return;
+
+        cell.textContent = 'X';
+        if (checkWinner()) {
+            setTimeout(() => showLoadingScreen('You escaped this time', true), 2000);
+            return;
+        }
+
+        setTimeout(computerMove, 2000);
+    }
+
+    function computerMove() {
+        let bestScore = -Infinity;
+        let bestMove;
+        cells.forEach((cell, index) => {
+            if (cell.textContent === '') {
+                cell.textContent = 'O';
+                let score = minimax(cells, 0, false);
+                cell.textContent = '';
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = index;
+                }
+            }
+        });
+        cells[bestMove].textContent = 'O';
+        
+        if (checkWinner()) {
+            setTimeout(() => showLoadingScreen('You messed up big time!', false), 2000);
+            return;
+        }
+    }
+
+    function minimax(cells, depth, isMaximizing) {
+        let result = checkWinner();
+        if (result !== null) {
+            if (result === 'X') {
+                return -10 + depth;
+            } else if (result === 'O') {
+                return 10 - depth;
+            } else {
+                return 0;
+            }
+        }
+
+        if (isMaximizing) {
+            let bestScore = -Infinity;
+            cells.forEach((cell, index) => {
+                if (cell.textContent === '') {
+                    cell.textContent = 'O';
+                    let score = minimax(cells, depth + 1, false);
+                    cell.textContent = '';
+                    bestScore = Math.max(score, bestScore);
+                }
+            });
+            return bestScore;
+        } else {
+            let bestScore = Infinity;
+            cells.forEach((cell, index) => {
+                if (cell.textContent === '') {
+                    cell.textContent = 'X';
+                    let score = minimax(cells, depth + 1, true);
+                    cell.textContent = '';
+                    bestScore = Math.min(score, bestScore);
+                }
+            });
+            return bestScore;
+        }
+    }
+
+    function checkWinner() {
+        const winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        for (const combination of winningCombinations) {
+            const [a, b, c] = combination;
+            if (cells[a].textContent !== '' &&
+                cells[a].textContent === cells[b].textContent &&
+                cells[a].textContent === cells[c].textContent) {
+                cells[a].style.color = 'red';
+                cells[b].style.color = 'red';
+                cells[c].style.color = 'red';
+                return cells[a].textContent;
+            }
+        }
+
+        if ([...cells].every(cell => cell.textContent !== '')) {
+            return 'Draw';
+        }
+
+        return null;
+    }
+
+    function showLoadingScreen(msg, win) {
+        loadingScreen.style.display = 'block';
+        loadingScreen.innerHTML = generateLoadingCode();
+        const loadingText = document.createElement('div');
+        loadingText.classList.add('loading-text');
+        loadingText.textContent = msg;
+        loadingScreen.appendChild(loadingText);
+        if (win) {
+            loadingText.style.color = 'green';
+        } else {
+            loadingText.style.color = 'red';
+        }
+        // Automatically scroll the loading screen content
+        const scrollInterval = setInterval(() => {
+            loadingScreen.scrollTop += 25; // Increased scroll speed
+            if (loadingScreen.scrollTop >= loadingScreen.scrollHeight - loadingScreen.clientHeight) {
+                loadingScreen.scrollTop = 0;
+            }
+        }, 50); // Adjusted scroll interval
+        showLoadingBar(); // Show loading bar
+    }
+
+    function generateLoadingCode() {
+        let code = '';
+        const codeLines = 1000;
+        for (let i = 0; i < codeLines; i++) {
+            code += generateRandomCodeLine() + '<br>';
+        }
+        return code;
+    }
+
+    function generateRandomCodeLine() {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const lineLength = Math.floor(Math.random() * 80) + 20;
+        let line = '';
+        for (let i = 0; i < lineLength; i++) {
+            line += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return line;
+    }
+
+    function showLoadingBar() {
+        const loadingBar = document.createElement('div');
+        loadingBar.classList.add('loading-bar');
+        gameContainer.appendChild(loadingBar); // Append loading bar to game container
+    }
+</script>
+</body>
+</html>
